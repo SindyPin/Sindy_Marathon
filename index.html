@@ -3,431 +3,257 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
 <title>Daily Running Card</title>
 <style>
 :root{
-  --text:#172033;
-  --muted:#667085;
-  --border:#d0d5dd;
-  --surface:#ffffff;
-  --surface-soft:#f8fafc;
-  --shadow:0 10px 30px rgba(16,24,40,.08);
-  --easy:#dbeafe;
-  --recovery:#dcfce7;
-  --intervals:#fee2e2;
-  --tempo:#fde7d8;
-  --fartlek:#ede9fe;
-  --strides:#e0f2fe;
-  --long:#fef3c7;
-  --progression:#fde68a;
-  --rest:#f3f4f6;
+  --text:#172033;--muted:#667085;--border:#d0d5dd;--surface:#fff;--soft:#f8fafc;
+  --easy:#dbeafe;--recovery:#dcfce7;--intervals:#fee2e2;--tempo:#fde7d8;
+  --fartlek:#ede9fe;--strides:#e0f2fe;--long:#fef3c7;--progression:#fde68a;--rest:#f3f4f6;
+  --done:#166534;--donebg:#dcfce7;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  background:linear-gradient(180deg,#f8fafc 0%,#ffffff 34%);
-  color:var(--text);
-}
-main{
-  width:min(1180px, calc(100% - 36px));
-  margin:0 auto;
-  padding:26px 0 36px;
-}
-.app-shell{
-  background:var(--surface);
-  border:1px solid #e4e7ec;
-  border-radius:24px;
-  box-shadow:var(--shadow);
-  padding:24px;
-}
-.header{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  gap:20px;
-  align-items:end;
-  margin-bottom:20px;
-}
-.eyebrow{
-  font-size:13px;
-  color:var(--muted);
-  font-weight:700;
-  letter-spacing:.02em;
-}
-h1{
-  margin:4px 0 0;
-  font-size:32px;
-  line-height:1.05;
-  letter-spacing:-.03em;
-}
-.week-select{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  min-width:230px;
-}
-.week-select label{
-  font-size:12px;
-  font-weight:700;
-  color:var(--muted);
-}
-select,button{font:inherit}
-select{
-  width:100%;
-  min-height:48px;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:10px 12px;
-  background:#fff;
-  color:var(--text);
-  font-size:16px;
-}
-.days{
-  display:grid;
-  grid-template-columns:repeat(7,minmax(0,1fr));
-  gap:10px;
-  margin-bottom:18px;
-}
-.daybtn{
-  min-height:84px;
-  border:1px solid rgba(15,23,42,.12);
-  border-radius:16px;
-  padding:12px 8px;
-  color:var(--text);
-  font-weight:800;
-  text-align:center;
-  cursor:pointer;
-  transition:transform .12s ease, box-shadow .12s ease;
-}
-.daybtn span{
-  display:block;
-  font-size:13px;
-  color:#475467;
-  margin-top:4px;
-  font-weight:700;
-}
-.daybtn[aria-pressed="true"]{
-  outline:3px solid #172033;
-  outline-offset:2px;
-  box-shadow:0 6px 18px rgba(16,24,40,.12);
-  transform:translateY(-1px);
-}
-.easy{background:var(--easy)}
-.recovery{background:var(--recovery)}
-.intervals{background:var(--intervals)}
-.tempo{background:var(--tempo)}
-.fartlek{background:var(--fartlek)}
-.strides{background:var(--strides)}
-.long{background:var(--long)}
-.progression{background:var(--progression)}
-.rest{background:var(--rest)}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,#f8fafc,#fff 35%);color:var(--text)}
+main{width:min(1180px,calc(100% - 36px));margin:0 auto;padding:26px 0 36px}
+.shell{background:#fff;border:1px solid #e4e7ec;border-radius:24px;box-shadow:0 10px 30px rgba(16,24,40,.08);padding:24px}
+.topbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end;margin-bottom:18px}
+.eyebrow{font-size:13px;color:var(--muted);font-weight:700}.title{font-size:32px;line-height:1.05;font-weight:850;margin-top:4px;letter-spacing:-.03em}
+.weekbox{min-width:230px}.weekbox label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px}
+select,button{font:inherit}select{width:100%;min-height:48px;border:1px solid var(--border);border-radius:14px;padding:10px 12px;background:#fff;color:var(--text);font-size:16px}
+.tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid #e4e7ec;padding-bottom:10px}
+.tab{min-height:44px;border:1px solid var(--border);background:#fff;border-radius:12px;padding:9px 16px;font-weight:800;color:var(--text);cursor:pointer}
+.tab.active{background:#172033;color:#fff;border-color:#172033}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.daybtn{position:relative;min-height:84px;border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:12px 8px;color:var(--text);font-weight:800;text-align:center;cursor:pointer}
+.daybtn span{display:block;font-size:13px;color:#475467;margin-top:4px}.daybtn[aria-pressed=true]{outline:3px solid #172033;outline-offset:2px}
+.daybtn.done::after{content:"✓";position:absolute;top:6px;right:8px;width:22px;height:22px;border-radius:999px;background:#166534;color:#fff;display:grid;place-items:center;font-size:13px}
+.easy{background:var(--easy)}.recovery{background:var(--recovery)}.intervals{background:var(--intervals)}.tempo{background:var(--tempo)}.fartlek{background:var(--fartlek)}.strides{background:var(--strides)}.long{background:var(--long)}.progression{background:var(--progression)}.rest{background:var(--rest)}
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr);gap:18px;align-items:start}
+.card{border:1px solid rgba(15,23,42,.12);border-radius:20px;padding:24px}.cardhead{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.date{font-size:14px;color:#475467;font-weight:600}.type{font-size:34px;line-height:1.05;font-weight:850;margin-top:4px;letter-spacing:-.03em}.km{border:1px solid rgba(15,23,42,.16);background:#fff;border-radius:999px;padding:8px 13px;font-weight:850;white-space:nowrap;font-size:17px}
+.detail{margin-top:28px;font-size:20px;line-height:1.55}.effort{margin-top:22px;border:1px solid rgba(15,23,42,.15);background:rgba(255,255,255,.9);border-radius:14px;padding:13px 14px;font-size:15px}
+.donearea{margin-top:16px}.donebtn{width:100%;min-height:52px;border-radius:14px;border:1px solid #15803d;background:#166534;color:#fff;font-weight:850;font-size:16px;cursor:pointer}.donebtn.completed{background:#fff;color:#166534;border:2px solid #166534}.donebtn:disabled{background:#e5e7eb;color:#667085;border-color:#d0d5dd;cursor:not-allowed}
+.side{display:flex;flex-direction:column;gap:14px}.info{background:var(--soft);border:1px solid #e4e7ec;border-radius:18px;padding:18px}.info h2{font-size:15px;margin:0 0 8px}.info p{margin:0;color:#475467;font-size:14px;line-height:1.5}
+.big{font-size:32px;font-weight:850;line-height:1}.small{font-size:13px;color:var(--muted)}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.nav button{min-height:48px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--text);font-weight:800;cursor:pointer}.nav button:last-child{background:#eef2f6}
+.note{margin-top:16px;font-size:12px;color:var(--muted);text-align:center;line-height:1.45}
+.hidden{display:none!important}
 
-.content-grid{
-  display:grid;
-  grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr);
-  gap:18px;
-  align-items:start;
+/* Stats */
+.statshead{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat{border:1px solid #e4e7ec;border-radius:18px;padding:18px;background:#fff}.stat .num{font-size:34px;font-weight:850;line-height:1}.stat .lab{margin-top:6px;font-size:13px;color:var(--muted);font-weight:700}
+.statgrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:18px}.panel{border:1px solid #e4e7ec;border-radius:20px;padding:20px;background:#fff}.panel h2{margin:0 0 14px;font-size:18px}
+.progressbar{height:14px;border-radius:999px;background:#eef2f6;overflow:hidden}.progressfill{height:100%;background:#166534;border-radius:999px;width:0}
+.weeklist{display:grid;gap:9px}.weekrow{display:grid;grid-template-columns:90px 1fr 72px;gap:10px;align-items:center}.weekrow .bar{height:10px;background:#eef2f6;border-radius:999px;overflow:hidden}.weekrow .fill{height:100%;background:#2563eb;border-radius:999px}
+.history{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:700}
+.empty{color:var(--muted);font-size:14px}
+.reset{margin-top:16px;border:1px solid #fecaca;background:#fff;color:#991b1b;border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer}
+.storageNote{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.45}
+
+@media(max-width:900px){
+ main{width:min(100% - 20px,820px);padding:12px 0 22px}.shell{padding:14px;border-radius:18px}.topbar{grid-template-columns:1fr}.weekbox{min-width:0}.title{font-size:27px}
+ .days{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px}.daybtn{min-width:74px;min-height:74px}.grid,.statgrid{grid-template-columns:1fr}.card{padding:18px}.type{font-size:28px}.detail{font-size:17px;margin-top:20px}.side{display:grid;grid-template-columns:1fr 1fr}.statshead{grid-template-columns:1fr 1fr}
 }
-.card{
-  border:1px solid rgba(15,23,42,.12);
-  border-radius:20px;
-  padding:24px;
-}
-.card-head{
-  display:flex;
-  justify-content:space-between;
-  gap:16px;
-  align-items:flex-start;
-}
-.date{
-  font-size:14px;
-  color:#475467;
-  font-weight:600;
-}
-.type{
-  font-size:34px;
-  line-height:1.05;
-  font-weight:850;
-  margin-top:4px;
-  letter-spacing:-.03em;
-}
-.km{
-  border:1px solid rgba(15,23,42,.16);
-  background:#fff;
-  border-radius:999px;
-  padding:8px 13px;
-  font-weight:850;
-  white-space:nowrap;
-  font-size:17px;
-}
-.detail{
-  margin-top:28px;
-  font-size:20px;
-  line-height:1.55;
-}
-.effort{
-  margin-top:22px;
-  border:1px solid rgba(15,23,42,.15);
-  background:rgba(255,255,255,.88);
-  border-radius:14px;
-  padding:13px 14px;
-  font-size:15px;
-  line-height:1.45;
-}
-.side{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-.info{
-  background:var(--surface-soft);
-  border:1px solid #e4e7ec;
-  border-radius:18px;
-  padding:18px;
-}
-.info h2{
-  font-size:15px;
-  margin:0 0 8px;
-}
-.info p{
-  margin:0;
-  color:#475467;
-  font-size:14px;
-  line-height:1.5;
-}
-.progress{
-  display:flex;
-  align-items:end;
-  gap:8px;
-  margin-top:12px;
-}
-.progress .big{
-  font-size:32px;
-  line-height:1;
-  font-weight:850;
-}
-.progress .small{
-  color:var(--muted);
-  font-size:13px;
-  padding-bottom:3px;
-}
-.warning{
-  background:#fff7ed;
-  border:1px solid #fdba74;
-  color:#7c2d12;
-}
-.nav{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:18px;
-}
-.nav button{
-  min-height:48px;
-  border-radius:14px;
-  border:1px solid var(--border);
-  background:#fff;
-  color:var(--text);
-  font-weight:800;
-  cursor:pointer;
-}
-.nav button:last-child{background:#eef2f6}
-.footer-note{
-  margin-top:16px;
-  font-size:12px;
-  color:var(--muted);
-  text-align:center;
-  line-height:1.45;
-}
-@media (hover:hover){
-  .daybtn:hover,.nav button:hover{filter:brightness(.985)}
-}
-@media (max-width:900px){
-  main{width:min(100% - 20px,820px);padding:12px 0 22px}
-  .app-shell{padding:14px;border-radius:18px}
-  .header{grid-template-columns:1fr;gap:14px;align-items:stretch}
-  .week-select{min-width:0}
-  h1{font-size:27px}
-  .days{
-    display:flex;
-    overflow-x:auto;
-    gap:8px;
-    padding-bottom:4px;
-    -webkit-overflow-scrolling:touch;
-  }
-  .daybtn{min-width:74px;min-height:74px}
-  .content-grid{grid-template-columns:1fr}
-  .card{padding:18px}
-  .type{font-size:28px}
-  .detail{font-size:17px;margin-top:20px}
-  .side{display:grid;grid-template-columns:1fr 1fr}
-}
-@media (max-width:520px){
-  .side{grid-template-columns:1fr}
-  .km{font-size:15px;padding:7px 11px}
-}
+@media(max-width:520px){.side{grid-template-columns:1fr}.statshead{grid-template-columns:1fr 1fr}.weekrow{grid-template-columns:72px 1fr 54px}}
 </style>
 </head>
 <body>
-<main>
-  <section class="app-shell">
-    <div class="header">
-      <div>
-        <div class="eyebrow">Sep 2026 → Feb 2027</div>
-        <h1>Daily Running Card</h1>
-      </div>
-      <div class="week-select">
-        <label for="week">Training week</label>
-        <select id="week" aria-label="Choose training week"></select>
-      </div>
-    </div>
+<main><section class="shell">
+  <div class="topbar">
+    <div><div class="eyebrow">Sep 2026 → Feb 2027</div><div class="title">Daily Running Card</div></div>
+    <div class="weekbox"><label for="week">Training week</label><select id="week"></select></div>
+  </div>
 
-    <div id="days" class="days" aria-label="Days of week"></div>
+  <div class="tabs">
+    <button id="trainingTabBtn" class="tab active" type="button">Training</button>
+    <button id="statsTabBtn" class="tab" type="button">Statistics</button>
+  </div>
 
-    <div class="content-grid">
-      <section id="card" class="card" aria-live="polite">
-        <div class="card-head">
-          <div>
-            <div id="date" class="date"></div>
-            <div id="type" class="type"></div>
-          </div>
+  <section id="trainingView">
+    <div id="days" class="days"></div>
+    <div class="grid">
+      <section id="card" class="card">
+        <div class="cardhead">
+          <div><div id="date" class="date"></div><div id="type" class="type"></div></div>
           <div id="km" class="km"></div>
         </div>
         <div id="detail" class="detail"></div>
         <div id="effort" class="effort"></div>
+        <div class="donearea"><button id="doneBtn" class="donebtn" type="button"></button></div>
       </section>
-
       <aside class="side">
-        
-<div class="info">
-  <h2>Session purpose</h2>
-  <p id="purposeText"></p>
-</div>
-<div class="info">
-  <h2>Week snapshot</h2>
-  <div class="progress">
-    <div id="weekTotal" class="big"></div>
-    <div class="small">running km</div>
-  </div>
-  <p style="margin-top:10px">The selected day is highlighted above. Use the arrows below to move quickly through the week.</p>
-</div>
-<div class="info">
-  <h2>Easy pace reminder</h2>
-  <p>Conversational = easy enough to speak in full sentences without gasping. Recovery runs should feel even easier.</p>
-</div>
-
+        <div class="info"><h2>Session purpose</h2><p id="purpose"></p></div>
+        <div class="info"><h2>Week snapshot</h2><div class="big" id="weekTotal"></div><div class="small">scheduled running km</div></div>
+        <div class="info"><h2>Progress this week</h2><div class="big" id="weekDone"></div><div class="small">planned runs completed</div></div>
       </aside>
     </div>
+    <div class="nav"><button id="prev" type="button">← Previous day</button><button id="next" type="button">Next day →</button></div>
+    <div class="note"><strong>Conversational</strong> = you can speak in full sentences without gasping. Rest days are not counted as goals.</div>
+  </section>
 
-    <div class="nav">
-      <button id="prev" type="button">← Previous day</button>
-      <button id="next" type="button">Next day →</button>
+  <section id="statsView" class="hidden">
+    <div class="statshead">
+      <div class="stat"><div id="completedCount" class="num">0</div><div class="lab">Goals achieved</div></div>
+      <div class="stat"><div id="eligibleCount" class="num">0</div><div class="lab">Planned runs so far</div></div>
+      <div class="stat"><div id="successRate" class="num">0%</div><div class="lab">Achievement rate</div></div>
+      <div class="stat"><div id="streak" class="num">0</div><div class="lab">Current run-day streak</div></div>
     </div>
 
-    <div class="footer-note"><strong>Conversational</strong> = you can speak in full sentences without gasping. Rest days stay rest days; every scheduled run is at least 10 km.</div>
+    <div class="statgrid">
+      <div class="panel">
+        <h2>Overall progress</h2>
+        <div class="progressbar"><div id="overallFill" class="progressfill"></div></div>
+        <p id="overallText" style="color:#475467;font-size:14px;line-height:1.5;margin:12px 0 20px"></p>
+        <h2>Week by week</h2>
+        <div id="weekList" class="weeklist"></div>
+      </div>
+      <div class="panel">
+        <h2>Completed days</h2>
+        <div id="history" class="history"></div>
+        <div class="storageNote">Your check-offs are saved in this browser on this device. They do not automatically sync to another phone/computer.</div>
+        <button id="resetBtn" class="reset" type="button">Reset all check-offs</button>
+      </div>
+    </div>
   </section>
-</main>
+</section></main>
 
 <script>
-const schedule = [[{"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides; 60\u201390 sec easy jog/walk between.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km easy warm-up \u2192 6 \u00d7 600 m at controlled 5K\u201310K effort, 300 m easy jog after each \u2192 easy cool-down to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy and relaxed.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Long Run", "km": 14, "detail": "14 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 11, "detail": "2 km warm-up \u2192 3 \u00d7 2 km tempo/threshold, 500 m easy jog between \u2192 2 km cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Long Run", "km": 15, "detail": "15 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km warm-up \u2192 5 \u00d7 800 m at controlled 10K effort, 400 m easy jog after each \u2192 cool-down to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 16, "detail": "16 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 10, "detail": "2 km warm-up \u2192 20 min controlled tempo \u2192 easy running \u2192 4 \u00d7 200 m relaxed-fast, 200 m jog \u2192 cool-down to 10 km.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 17, "detail": "17 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 11, "detail": "2 km warm-up \u2192 6 \u00d7 800 m at controlled 10K effort, 400 m easy jog after each \u2192 2 km cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Fartlek", "km": 10, "detail": "2 km easy \u2192 8 \u00d7 (1 min controlled hard + 2 min very easy) \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 14, "detail": "14 km easy at conversational effort; deliberately shorter.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 11, "detail": "2 km warm-up \u2192 5 \u00d7 1 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Intervals", "km": 11, "detail": "2 km warm-up \u2192 2 \u00d7 3 km tempo, 1 km easy between \u2192 easy cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 19, "detail": "19 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 12, "detail": "2 km warm-up \u2192 6 \u00d7 1 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 20, "detail": "20 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Fartlek", "km": 10, "detail": "2 km easy \u2192 10 \u00d7 (1 min hard + 2 min easy) \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 16, "detail": "16 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 11, "detail": "2 km warm-up \u2192 4 \u00d7 1.2 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Progression Long Run", "km": 20, "detail": "20 km total: first 17 km easy, final 3 km steady.", "effort": "Mostly conversational; final section steady \u00b7 RPE 4\u20135/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 11, "detail": "2 km warm-up \u2192 25 min tempo \u2192 5 min easy \u2192 10 min tempo \u2192 easy cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 21, "detail": "21 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 12, "detail": "2 km warm-up \u2192 5 \u00d7 1.2 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 22, "detail": "22 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km warm-up \u2192 8 \u00d7 400 m at controlled 5K effort, 400 m easy jog \u2192 cool-down to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 17, "detail": "17 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Intervals", "km": 11, "detail": "2 km warm-up \u2192 3 \u00d7 2 km threshold, 500 m jog between \u2192 easy cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 21, "detail": "21 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 12, "detail": "2 km warm-up \u2192 6 \u00d7 1 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 22, "detail": "22 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Intervals", "km": 11, "detail": "2 km warm-up \u2192 2 \u00d7 3 km tempo, 1 km easy between \u2192 cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Progression Long Run", "km": 23, "detail": "23 km total: first 19 km easy, final 4 km steady.", "effort": "Mostly conversational; final section steady \u00b7 RPE 4\u20135/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Fartlek", "km": 10, "detail": "2 km easy \u2192 10 \u00d7 (1 min hard + 2 min easy) \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 13, "detail": "2 km warm-up \u2192 5 \u00d7 1.4 km at controlled 10K effort, 400 m jog after each \u2192 2 km cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 22, "detail": "22 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 12, "detail": "2 km warm-up \u2192 35 min continuous controlled tempo \u2192 easy running to 12 km.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 23, "detail": "23 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 13, "detail": "2 km warm-up \u2192 6 \u00d7 1.2 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 24, "detail": "24 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km warm-up \u2192 6 \u00d7 600 m controlled fast, 300 m jog after each \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}]];
-const weekStarts = [{"iso": "2026-09-27", "label": "27 Sep"}, {"iso": "2026-10-04", "label": "04 Oct"}, {"iso": "2026-10-11", "label": "11 Oct"}, {"iso": "2026-10-18", "label": "18 Oct"}, {"iso": "2026-10-25", "label": "25 Oct"}, {"iso": "2026-11-01", "label": "01 Nov"}, {"iso": "2026-11-08", "label": "08 Nov"}, {"iso": "2026-11-15", "label": "15 Nov"}, {"iso": "2026-11-22", "label": "22 Nov"}, {"iso": "2026-11-29", "label": "29 Nov"}, {"iso": "2026-12-06", "label": "06 Dec"}, {"iso": "2026-12-13", "label": "13 Dec"}, {"iso": "2026-12-20", "label": "20 Dec"}, {"iso": "2026-12-27", "label": "27 Dec"}, {"iso": "2027-01-03", "label": "03 Jan"}, {"iso": "2027-01-10", "label": "10 Jan"}, {"iso": "2027-01-17", "label": "17 Jan"}, {"iso": "2027-01-24", "label": "24 Jan"}, {"iso": "2027-01-31", "label": "31 Jan"}, {"iso": "2027-02-07", "label": "07 Feb"}, {"iso": "2027-02-14", "label": "14 Feb"}, {"iso": "2027-02-21", "label": "21 Feb"}];
-const phases = ["Break", "Break", "Teaching", "Teaching", "Teaching", "Recovery", "Research base", "Research base", "Research base", "Recovery", "Endurance", "Endurance", "Endurance", "Recovery", "Aerobic strength", "Aerobic strength", "Aerobic strength", "Recovery", "Pre-marathon", "Pre-marathon", "Pre-marathon", "Transition"];
-const names = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-let wi = 0, di = 0;
+const schedule=[[{"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides; 60\u201390 sec easy jog/walk between.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km easy warm-up \u2192 6 \u00d7 600 m at controlled 5K\u201310K effort, 300 m easy jog after each \u2192 easy cool-down to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy and relaxed.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Long Run", "km": 14, "detail": "14 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 11, "detail": "2 km warm-up \u2192 3 \u00d7 2 km tempo/threshold, 500 m easy jog between \u2192 2 km cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Long Run", "km": 15, "detail": "15 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km warm-up \u2192 5 \u00d7 800 m at controlled 10K effort, 400 m easy jog after each \u2192 cool-down to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 16, "detail": "16 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 10, "detail": "2 km warm-up \u2192 20 min controlled tempo \u2192 easy running \u2192 4 \u00d7 200 m relaxed-fast, 200 m jog \u2192 cool-down to 10 km.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 17, "detail": "17 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 11, "detail": "2 km warm-up \u2192 6 \u00d7 800 m at controlled 10K effort, 400 m easy jog after each \u2192 2 km cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Fartlek", "km": 10, "detail": "2 km easy \u2192 8 \u00d7 (1 min controlled hard + 2 min very easy) \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running \u2014 busy teaching day.", "effort": "Recovery day"}, {"type": "Long Run", "km": 14, "detail": "14 km easy at conversational effort; deliberately shorter.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 11, "detail": "2 km warm-up \u2192 5 \u00d7 1 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Intervals", "km": 11, "detail": "2 km warm-up \u2192 2 \u00d7 3 km tempo, 1 km easy between \u2192 easy cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 19, "detail": "19 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 12, "detail": "2 km warm-up \u2192 6 \u00d7 1 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 20, "detail": "20 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Fartlek", "km": 10, "detail": "2 km easy \u2192 10 \u00d7 (1 min hard + 2 min easy) \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 16, "detail": "16 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 11, "detail": "2 km warm-up \u2192 4 \u00d7 1.2 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Progression Long Run", "km": 20, "detail": "20 km total: first 17 km easy, final 3 km steady.", "effort": "Mostly conversational; final section steady \u00b7 RPE 4\u20135/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 11, "detail": "2 km warm-up \u2192 25 min tempo \u2192 5 min easy \u2192 10 min tempo \u2192 easy cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 21, "detail": "21 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 12, "detail": "2 km warm-up \u2192 5 \u00d7 1.2 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 22, "detail": "22 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km warm-up \u2192 8 \u00d7 400 m at controlled 5K effort, 400 m easy jog \u2192 cool-down to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 17, "detail": "17 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Intervals", "km": 11, "detail": "2 km warm-up \u2192 3 \u00d7 2 km threshold, 500 m jog between \u2192 easy cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 21, "detail": "21 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 12, "detail": "2 km warm-up \u2192 6 \u00d7 1 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 22, "detail": "22 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Intervals", "km": 11, "detail": "2 km warm-up \u2192 2 \u00d7 3 km tempo, 1 km easy between \u2192 cool-down.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Progression Long Run", "km": 23, "detail": "23 km total: first 19 km easy, final 4 km steady.", "effort": "Mostly conversational; final section steady \u00b7 RPE 4\u20135/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Fartlek", "km": 10, "detail": "2 km easy \u2192 10 \u00d7 (1 min hard + 2 min easy) \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 13, "detail": "2 km warm-up \u2192 5 \u00d7 1.4 km at controlled 10K effort, 400 m jog after each \u2192 2 km cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 22, "detail": "22 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Tempo Run", "km": 12, "detail": "2 km warm-up \u2192 35 min continuous controlled tempo \u2192 easy running to 12 km.", "effort": "Controlled-hard \u00b7 RPE 6\u20137/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 23, "detail": "23 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 13, "detail": "2 km warm-up \u2192 6 \u00d7 1.2 km at controlled 10K effort, 400 m jog after each \u2192 easy cool-down.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 24, "detail": "24 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}], [{"type": "Easy Run", "km": 10, "detail": "10 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Intervals", "km": 10, "detail": "2 km warm-up \u2192 6 \u00d7 600 m controlled fast, 300 m jog after each \u2192 easy running to 10 km.", "effort": "Fast but controlled \u00b7 RPE 7\u20138/10"}, {"type": "Recovery Run", "km": 10, "detail": "10 km very easy.", "effort": "Very easy \u00b7 RPE 2\u20133/10"}, {"type": "Easy + Strides", "km": 10, "detail": "10 km easy. Finish with 6 \u00d7 20 sec relaxed strides.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running.", "effort": "Recovery day"}, {"type": "Long Run", "km": 18, "detail": "18 km easy at conversational effort.", "effort": "Conversational \u00b7 RPE 3\u20134/10"}, {"type": "Rest", "km": null, "detail": "No running. Recovery day.", "effort": "Recovery day"}]];
+const weekStarts=[{"iso": "2026-09-27", "label": "27 Sep"}, {"iso": "2026-10-04", "label": "04 Oct"}, {"iso": "2026-10-11", "label": "11 Oct"}, {"iso": "2026-10-18", "label": "18 Oct"}, {"iso": "2026-10-25", "label": "25 Oct"}, {"iso": "2026-11-01", "label": "01 Nov"}, {"iso": "2026-11-08", "label": "08 Nov"}, {"iso": "2026-11-15", "label": "15 Nov"}, {"iso": "2026-11-22", "label": "22 Nov"}, {"iso": "2026-11-29", "label": "29 Nov"}, {"iso": "2026-12-06", "label": "06 Dec"}, {"iso": "2026-12-13", "label": "13 Dec"}, {"iso": "2026-12-20", "label": "20 Dec"}, {"iso": "2026-12-27", "label": "27 Dec"}, {"iso": "2027-01-03", "label": "03 Jan"}, {"iso": "2027-01-10", "label": "10 Jan"}, {"iso": "2027-01-17", "label": "17 Jan"}, {"iso": "2027-01-24", "label": "24 Jan"}, {"iso": "2027-01-31", "label": "31 Jan"}, {"iso": "2027-02-07", "label": "07 Feb"}, {"iso": "2027-02-14", "label": "14 Feb"}, {"iso": "2027-02-21", "label": "21 Feb"}];
+const phases=["Break", "Break", "Teaching", "Teaching", "Teaching", "Recovery", "Research base", "Research base", "Research base", "Recovery", "Endurance", "Endurance", "Endurance", "Recovery", "Aerobic strength", "Aerobic strength", "Aerobic strength", "Recovery", "Pre-marathon", "Pre-marathon", "Pre-marathon", "Transition"];
+const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const STORAGE_KEY='sindy-marathon-completed-v1';
+let wi=0,di=0;
+let completed={};
 
-const week = document.getElementById('week');
-const days = document.getElementById('days');
+try{completed=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}}catch(e){completed={}}
 
-function cls(type){
-  if(type.includes('Progression')) return 'progression';
-  if(type.includes('Long')) return 'long';
-  if(type.includes('Interval')) return 'intervals';
-  if(type.includes('Tempo')) return 'tempo';
-  if(type.includes('Fartlek')) return 'fartlek';
-  if(type.includes('Strides')) return 'strides';
-  if(type.includes('Recovery')) return 'recovery';
-  if(type.includes('Easy')) return 'easy';
-  return 'rest';
+function cls(t){
+ if(t.includes('Progression'))return'progression';
+ if(t.includes('Long'))return'long';
+ if(t.includes('Interval'))return'intervals';
+ if(t.includes('Tempo'))return'tempo';
+ if(t.includes('Fartlek'))return'fartlek';
+ if(t.includes('Strides'))return'strides';
+ if(t.includes('Recovery'))return'recovery';
+ if(t.includes('Easy'))return'easy';
+ return'rest';
 }
+function dateFor(w,d){const x=new Date(weekStarts[w].iso+'T00:00:00');x.setDate(x.getDate()+d+1);return x}
+function keyFor(w,d){return weekStarts[w].iso+'-'+d}
+function isRun(w,d){return !!schedule[w][d].km}
+function isDone(w,d){return !!completed[keyFor(w,d)]}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(completed))}
+function todayDateOnly(){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
 
-function labelForDay(day){
-  const s=schedule[wi][day];
-  return s.km ? `${s.km} km` : '—';
-}
-
-weekStarts.forEach((x,i)=>{
-  const o = document.createElement('option');
-  o.value = i;
-  o.textContent = `Week ${i+1} · ${x.label}`;
-  week.appendChild(o);
-});
+const week=document.getElementById('week');
+weekStarts.forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`Week ${i+1} · ${x.label}`;week.appendChild(o)});
 
 (function chooseToday(){
-  const now = new Date();
-  const planStart = new Date(weekStarts[0].iso+'T00:00:00');
-  const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const diff = Math.floor((today-planStart)/86400000);
-  if(diff>=0 && diff<weekStarts.length*7){
-    wi = Math.min(weekStarts.length-1, Math.floor(diff/7));
-    const jsDay = now.getDay();
-    di = jsDay===0 ? 6 : jsDay-1;
-  }
+ const now=new Date(),start=new Date(weekStarts[0].iso+'T00:00:00');
+ const diff=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-start)/86400000);
+ if(diff>=0&&diff<weekStarts.length*7){wi=Math.min(weekStarts.length-1,Math.floor(diff/7));const jd=now.getDay();di=jd===0?6:jd-1}
 })();
 
-function updateSidePanels(s){
-  
-const total = schedule[wi].reduce((a,b)=>a+(b.km||0),0);
-document.getElementById('weekTotal').textContent = total;
-let purpose='Aerobic development and low-stress mileage.';
-if(s.type.includes('Interval')) purpose='Quality session to build speed endurance and running economy.';
-else if(s.type.includes('Tempo')) purpose='Controlled threshold work to improve sustainable pace.';
-else if(s.type.includes('Fartlek')) purpose='Variable-pace quality work with a less rigid structure.';
-else if(s.type.includes('Long')) purpose='Primary endurance session of the week.';
-else if(s.type.includes('Strides')) purpose='Easy running plus short relaxed accelerations for leg turnover.';
-else if(s.type.includes('Rest')) purpose='Recovery and absorption of training.';
-document.getElementById('purposeText').textContent = purpose;
-
+function purposeFor(type){
+ if(type.includes('Interval'))return'Quality session for speed endurance and running economy.';
+ if(type.includes('Tempo'))return'Controlled threshold work to improve sustainable pace.';
+ if(type.includes('Fartlek'))return'Variable-pace quality work with a flexible structure.';
+ if(type.includes('Long'))return'Primary endurance session of the week.';
+ if(type.includes('Strides'))return'Easy aerobic running plus short relaxed accelerations.';
+ if(type.includes('Recovery'))return'Low-intensity mileage to support recovery.';
+ if(type.includes('Easy'))return'Aerobic development with low training stress.';
+ return'Recovery and absorption of training.';
 }
 
-function render(){
-  week.value = wi;
-  days.innerHTML = '';
-
-  for(let d=0; d<7; d++){
-    const s = schedule[wi][d];
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'daybtn ' + cls(s.type);
-    b.setAttribute('aria-pressed', d===di ? 'true' : 'false');
-    b.innerHTML = `<strong>${names[d]}</strong><span>${labelForDay(d)}</span>`;
-    b.addEventListener('click', ()=>{ di=d; render(); });
-    days.appendChild(b);
-  }
-
-  const s = schedule[wi][di];
-  const dt = new Date(weekStarts[wi].iso+'T00:00:00');
-  dt.setDate(dt.getDate()+di);
-  document.getElementById('date').textContent =
-    dt.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' · ' + phases[wi];
-  document.getElementById('type').textContent = s.type;
-  document.getElementById('km').textContent = s.km ? (s.km + ' km') : '—';
-  document.getElementById('detail').textContent = s.detail;
-  document.getElementById('effort').innerHTML = '<strong>Effort:</strong> ' + s.effort;
-  document.getElementById('card').className = 'card ' + cls(s.type);
-  updateSidePanels(s);
+function renderTraining(){
+ week.value=wi;
+ const days=document.getElementById('days');days.innerHTML='';
+ for(let d=0;d<7;d++){
+   const s=schedule[wi][d],b=document.createElement('button');
+   b.type='button';b.className='daybtn '+cls(s.type)+(isDone(wi,d)?' done':'');
+   b.setAttribute('aria-pressed',d===di?'true':'false');
+   b.innerHTML=`<strong>${names[d]}</strong><span>${s.km?s.km+' km':'—'}</span>`;
+   b.addEventListener('click',()=>{di=d;renderTraining()});days.appendChild(b);
+ }
+ const s=schedule[wi][di],dt=dateFor(wi,di);
+ document.getElementById('date').textContent=dt.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · '+phases[wi];
+ document.getElementById('type').textContent=s.type;
+ document.getElementById('km').textContent=s.km?s.km+' km':'—';
+ document.getElementById('detail').textContent=s.detail;
+ document.getElementById('effort').innerHTML='<strong>Effort:</strong> '+s.effort;
+ document.getElementById('card').className='card '+cls(s.type);
+ document.getElementById('purpose').textContent=purposeFor(s.type);
+ document.getElementById('weekTotal').textContent=schedule[wi].reduce((a,b)=>a+(b.km||0),0)+' km';
+ const planned=schedule[wi].filter(x=>x.km).length,done=schedule[wi].reduce((a,x,d)=>a+(x.km&&isDone(wi,d)?1:0),0);
+ document.getElementById('weekDone').textContent=done+' / '+planned;
+ const btn=document.getElementById('doneBtn');
+ if(!s.km){btn.textContent='Rest day — no goal to check off';btn.disabled=true;btn.className='donebtn'}
+ else if(isDone(wi,di)){btn.textContent='✓ Completed — tap to undo';btn.disabled=false;btn.className='donebtn completed'}
+ else{btn.textContent='Mark today’s run as done ✓';btn.disabled=false;btn.className='donebtn'}
 }
 
-week.addEventListener('change', e=>{ wi=Number(e.target.value); di=0; render(); });
-document.getElementById('prev').addEventListener('click', ()=>{
-  if(di>0) di--; else if(wi>0){ wi--; di=6; }
-  render();
+function allScheduledRunDays(){
+ const arr=[];
+ for(let w=0;w<schedule.length;w++)for(let d=0;d<7;d++)if(isRun(w,d))arr.push({w,d,date:dateFor(w,d),key:keyFor(w,d)});
+ return arr;
+}
+function renderStats(){
+ const today=todayDateOnly(),all=allScheduledRunDays();
+ const elapsed=all.filter(x=>x.date<=today);
+ const achieved=elapsed.filter(x=>completed[x.key]);
+ const rate=elapsed.length?Math.round(achieved.length/elapsed.length*100):0;
+ document.getElementById('completedCount').textContent=achieved.length;
+ document.getElementById('eligibleCount').textContent=elapsed.length;
+ document.getElementById('successRate').textContent=rate+'%';
+ document.getElementById('overallFill').style.width=rate+'%';
+ document.getElementById('overallText').textContent=elapsed.length?`You have completed ${achieved.length} of ${elapsed.length} scheduled running days that have occurred so far.`:'Your training plan has not started yet.';
+
+ // streak over scheduled run days only, ending at most recent elapsed scheduled run
+ let streak=0;
+ for(let i=elapsed.length-1;i>=0;i--){if(completed[elapsed[i].key])streak++;else break}
+ document.getElementById('streak').textContent=streak;
+
+ const wl=document.getElementById('weekList');wl.innerHTML='';
+ for(let w=0;w<schedule.length;w++){
+   const runs=schedule[w].map((x,d)=>({x,d})).filter(z=>z.x.km);
+   const elapsedRuns=runs.filter(z=>dateFor(w,z.d)<=today);
+   if(!elapsedRuns.length)continue;
+   const done=elapsedRuns.filter(z=>isDone(w,z.d)).length;
+   const pct=Math.round(done/elapsedRuns.length*100);
+   const row=document.createElement('div');row.className='weekrow';
+   row.innerHTML=`<div style="font-size:13px;font-weight:800">Week ${w+1}</div><div class="bar"><div class="fill" style="width:${pct}%"></div></div><div style="font-size:12px;color:#475467;text-align:right">${done}/${elapsedRuns.length}</div>`;
+   wl.appendChild(row);
+ }
+
+ const hist=document.getElementById('history');hist.innerHTML='';
+ const completedDates=achieved.slice().sort((a,b)=>b.date-a.date);
+ if(!completedDates.length){hist.innerHTML='<div class="empty">No running days checked off yet.</div>'}
+ else completedDates.forEach(x=>{const c=document.createElement('div');c.className='chip';c.textContent=x.date.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});hist.appendChild(c)});
+}
+
+document.getElementById('doneBtn').addEventListener('click',()=>{
+ const s=schedule[wi][di];if(!s.km)return;
+ const k=keyFor(wi,di);if(completed[k])delete completed[k];else completed[k]=true;save();renderTraining();
 });
-document.getElementById('next').addEventListener('click', ()=>{
-  if(di<6) di++; else if(wi<weekStarts.length-1){ wi++; di=0; }
-  render();
+week.addEventListener('change',e=>{wi=Number(e.target.value);di=0;renderTraining()});
+document.getElementById('prev').addEventListener('click',()=>{if(di>0)di--;else if(wi>0){wi--;di=6}renderTraining()});
+document.getElementById('next').addEventListener('click',()=>{if(di<6)di++;else if(wi<schedule.length-1){wi++;di=0}renderTraining()});
+
+function showTraining(){
+ document.getElementById('trainingView').classList.remove('hidden');document.getElementById('statsView').classList.add('hidden');
+ document.getElementById('trainingTabBtn').classList.add('active');document.getElementById('statsTabBtn').classList.remove('active');
+}
+function showStats(){
+ document.getElementById('trainingView').classList.add('hidden');document.getElementById('statsView').classList.remove('hidden');
+ document.getElementById('trainingTabBtn').classList.remove('active');document.getElementById('statsTabBtn').classList.add('active');renderStats();
+}
+document.getElementById('trainingTabBtn').addEventListener('click',showTraining);
+document.getElementById('statsTabBtn').addEventListener('click',showStats);
+document.getElementById('resetBtn').addEventListener('click',()=>{
+ if(confirm('Reset all completed-day check-offs?')){completed={};save();renderStats();renderTraining()}
 });
 
-render();
+renderTraining();
 </script>
 </body>
 </html>
