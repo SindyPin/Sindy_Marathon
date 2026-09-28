@@ -54,6 +54,31 @@ select,button{font:inherit}select{width:100%;min-height:48px;border:1px solid va
  .days{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px}.daybtn{min-width:74px;min-height:74px}.grid,.statgrid{grid-template-columns:1fr}.card{padding:18px}.type{font-size:28px}.detail{font-size:17px;margin-top:20px}.side{display:grid;grid-template-columns:1fr 1fr}.statshead{grid-template-columns:1fr 1fr}
 }
 @media(max-width:520px){.side{grid-template-columns:1fr}.statshead{grid-template-columns:1fr 1fr}.weekrow{grid-template-columns:72px 1fr 54px}}
+
+.log-toggle{margin-top:12px;width:100%;min-height:48px;border-radius:14px;border:1px solid #94a3b8;background:#fff;color:#172033;font-weight:850;cursor:pointer}
+.log-panel{margin-top:12px;border:1px solid #d0d5dd;background:rgba(255,255,255,.94);border-radius:16px;padding:16px}
+.log-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field label{display:block;font-size:12px;font-weight:800;color:#475467;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;min-height:44px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#172033;padding:9px 10px;font-size:16px}
+.field textarea{min-height:82px;resize:vertical}
+.field-wide{grid-column:1/-1}
+.log-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.save-log{min-height:46px;border:1px solid #166534;background:#166534;color:#fff;border-radius:12px;padding:10px 16px;font-weight:850;cursor:pointer}
+.clear-log{min-height:46px;border:1px solid #d0d5dd;background:#fff;color:#475467;border-radius:12px;padding:10px 16px;font-weight:800;cursor:pointer}
+.saved-msg{font-size:13px;color:#166534;font-weight:800;align-self:center}
+.log-summary{margin-top:12px;border-top:1px solid #e5e7eb;padding-top:12px;font-size:13px;color:#475467;line-height:1.5}
+@media(max-width:520px){.log-grid{grid-template-columns:1fr}.field-wide{grid-column:auto}}
+
+
+.adaptive{margin-top:16px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:16px;padding:16px;color:#172033}
+.adaptive.green{border-color:#86efac;background:#f0fdf4}.adaptive.yellow{border-color:#fde68a;background:#fffbeb}.adaptive.orange{border-color:#fdba74;background:#fff7ed}.adaptive.red{border-color:#fca5a5;background:#fef2f2}
+.adaptive h3{margin:0 0 7px;font-size:15px}.adaptive p{margin:0;font-size:14px;line-height:1.5;color:#344054}.adaptive .rec-title{font-size:18px;font-weight:850;margin:7px 0;color:#172033}.adaptive-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.apply-rec,.clear-rec{min-height:44px;border-radius:12px;padding:9px 13px;font-weight:850;cursor:pointer}.apply-rec{background:#172033;color:#fff;border:1px solid #172033}.clear-rec{background:#fff;color:#475467;border:1px solid #d0d5dd}
+.skip-btn{width:100%;min-height:48px;margin-top:9px;border-radius:14px;border:1px solid #d0d5dd;background:#fff;color:#475467;font-weight:850;cursor:pointer}.skip-btn:disabled{background:#f3f4f6;color:#98a2b3;cursor:not-allowed}
+.skip-panel{margin-top:10px;border:1px solid #d0d5dd;background:#fff;border-radius:15px;padding:14px}.skip-panel h3{font-size:14px;margin:0 0 10px}.reason-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.reason-btn{min-height:44px;border-radius:11px;border:1px solid #d0d5dd;background:#f8fafc;color:#172033;font-weight:750;cursor:pointer}.reason-btn.warn{border-color:#fdba74;background:#fff7ed;color:#9a3412}.reason-btn.danger{border-color:#fca5a5;background:#fef2f2;color:#991b1b}.skip-note{margin-top:10px;font-size:12px;line-height:1.45;color:#667085}
+.daybtn.skipped::after{content:'↷';position:absolute;top:6px;right:8px;width:22px;height:22px;border-radius:999px;background:#64748b;color:#fff;display:grid;place-items:center;font-size:13px}.daybtn.skipped.done::after{content:'✓';background:#166534}.status-chip{display:inline-flex;align-items:center;gap:6px;margin-top:10px;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800;background:#fff;border:1px solid #d0d5dd}.stats-reasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.reason-stat{border:1px solid #e4e7ec;border-radius:12px;padding:10px;background:#f8fafc}.reason-stat b{display:block;font-size:20px}.reason-stat span{font-size:12px;color:#667085}
+@media(max-width:520px){.reason-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -78,7 +103,49 @@ select,button{font:inherit}select{width:100%;min-height:48px;border:1px solid va
         </div>
         <div id="detail" class="detail"></div>
         <div id="effort" class="effort"></div>
-        <div class="donearea"><button id="doneBtn" class="donebtn" type="button"></button></div>
+        <div class="donearea">
+<button id="doneBtn" class="donebtn" type="button"></button>
+<button id="skipBtn" class="skip-btn" type="button">Skip this run</button>
+<div id="skipPanel" class="skip-panel hidden">
+  <h3>Why are you skipping it?</h3>
+  <div class="reason-grid">
+    <button class="reason-btn" type="button" data-reason="time">⏱ Lack of time</button>
+    <button class="reason-btn" type="button" data-reason="weather">🌧 Bad weather</button>
+    <button class="reason-btn" type="button" data-reason="other">📌 Other reason</button>
+    <button class="reason-btn warn" type="button" data-reason="fatigue">😴 Fatigue / poor recovery</button>
+    <button class="reason-btn danger" type="button" data-reason="pain">⚠️ Pain / injury concern</button>
+  </div>
+  <div class="skip-note">Time, weather or another practical reason: normally continue with the next planned run and do not add missed kilometres. Fatigue or pain can trigger a recovery recommendation.</div>
+  <button id="removeSkipBtn" class="clear-rec hidden" type="button" style="margin-top:10px">Remove skip status</button>
+</div>
+<div id="statusChip" class="status-chip hidden"></div>
+<div id="adaptiveBox" class="adaptive">
+  <h3>Adaptive next-training check</h3>
+  <div id="adaptiveTitle" class="rec-title">Plan unchanged</div>
+  <p id="adaptiveText">Log or complete your previous training to generate an adaptive recommendation.</p>
+  <div id="adaptiveActions" class="adaptive-actions"></div>
+</div>
+<button id="logToggle" class="log-toggle" type="button">＋ Add / edit workout details</button>
+<div id="logPanel" class="log-panel hidden">
+  <div class="log-grid">
+    <div class="field"><label for="actualDistance">Actual distance (km)</label><input id="actualDistance" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 8.4"></div>
+    <div class="field"><label for="duration">Duration (minutes)</label><input id="duration" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 55"></div>
+    <div class="field"><label for="pace">Average pace (min/km)</label><input id="pace" type="text" inputmode="decimal" placeholder="e.g. 6:15"></div>
+    <div class="field"><label for="speed">Average speed (km/h)</label><input id="speed" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 9.6"></div>
+    <div class="field"><label for="avgHR">Average heart rate (bpm)</label><input id="avgHR" type="number" min="30" max="240" step="1" inputmode="numeric" placeholder="optional"></div>
+    <div class="field"><label for="rpe">Perceived effort (RPE 1–10)</label><select id="rpe"><option value="">Select</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+    <div class="field"><label for="pain">Pain during/after run (0–10)</label><select id="pain"><option value="">Select</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+    <div class="field"><label for="feeling">How did it feel?</label><select id="feeling"><option value="">Select</option><option>Great</option><option>Good</option><option>Okay</option><option>Hard</option><option>Very hard</option></select></div>
+    <div class="field field-wide"><label for="notes">Notes</label><textarea id="notes" placeholder="Weather, hills, fatigue, soreness, fuelling, anything unusual..."></textarea></div>
+  </div>
+  <div class="log-actions">
+    <button id="saveLogBtn" class="save-log" type="button">Save workout details</button>
+    <button id="clearLogBtn" class="clear-log" type="button">Clear details</button>
+    <span id="savedMsg" class="saved-msg"></span>
+  </div>
+  <div id="logSummary" class="log-summary"></div>
+</div>
+</div>
       </section>
       <aside class="side">
         <div class="info"><h2>Session purpose</h2><p id="purpose"></p></div>
@@ -95,7 +162,7 @@ select,button{font:inherit}select{width:100%;min-height:48px;border:1px solid va
       <div class="stat"><div id="completedCount" class="num">0</div><div class="lab">Goals achieved</div></div>
       <div class="stat"><div id="eligibleCount" class="num">0</div><div class="lab">Planned runs so far</div></div>
       <div class="stat"><div id="successRate" class="num">0%</div><div class="lab">Achievement rate</div></div>
-      <div class="stat"><div id="streak" class="num">0</div><div class="lab">Current run-day streak</div></div>
+      <div class="stat"><div id="streak" class="num">0</div><div class="lab">Current run-day streak</div></div><div class="stat"><div id="actualKm" class="num">0</div><div class="lab">Actual km logged</div></div><div class="stat"><div id="avgPaceStat" class="num">—</div><div class="lab">Average logged pace</div></div><div class="stat"><div id="skippedCount" class="num">0</div><div class="lab">Runs skipped</div></div>
     </div>
 
     <div class="statgrid">
@@ -108,7 +175,7 @@ select,button{font:inherit}select{width:100%;min-height:48px;border:1px solid va
       </div>
       <div class="panel">
         <h2>Completed days</h2>
-        <div id="history" class="history"></div>
+        <div id="history" class="history"></div><h2 style="margin-top:22px">Skipped-run reasons</h2><div id="reasonStats" class="stats-reasons"></div>
         <div class="storageNote">Your check-offs are saved in this browser on this device. They do not automatically sync to another phone/computer.</div>
         <button id="resetBtn" class="reset" type="button">Reset all check-offs</button>
       </div>
@@ -122,10 +189,19 @@ const weekStarts=[{"iso": "2026-09-27", "label": "27 Sep"}, {"iso": "2026-10-04"
 const phases=["Break", "Break", "Teaching", "Teaching", "Teaching", "Recovery", "Research base", "Research base", "Research base", "Recovery", "Endurance", "Endurance", "Endurance", "Recovery", "Aerobic strength", "Aerobic strength", "Aerobic strength", "Recovery", "Pre-marathon", "Pre-marathon", "Pre-marathon", "Transition"];
 const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const STORAGE_KEY='sindy-marathon-completed-v1';
+const LOG_KEY='sindy-marathon-logs-v1';
+const SKIP_KEY='sindy-marathon-skips-v1';
+const ADAPT_KEY='sindy-marathon-adaptive-overrides-v1';
 let wi=0,di=0;
 let completed={};
+let logs={};
+let skips={};
+let adaptiveOverrides={};
 
 try{completed=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}}catch(e){completed={}}
+try{logs=JSON.parse(localStorage.getItem(LOG_KEY)||'{}')||{}}catch(e){logs={}}
+try{skips=JSON.parse(localStorage.getItem(SKIP_KEY)||'{}')||{}}catch(e){skips={}}
+try{adaptiveOverrides=JSON.parse(localStorage.getItem(ADAPT_KEY)||'{}')||{}}catch(e){adaptiveOverrides={}}
 
 function cls(t){
  if(t.includes('Progression'))return'progression';
@@ -143,6 +219,74 @@ function keyFor(w,d){return weekStarts[w].iso+'-'+d}
 function isRun(w,d){return !!schedule[w][d].km}
 function isDone(w,d){return !!completed[keyFor(w,d)]}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(completed))}
+function saveLogs(){localStorage.setItem(LOG_KEY,JSON.stringify(logs))}
+function saveSkips(){localStorage.setItem(SKIP_KEY,JSON.stringify(skips))}
+function saveOverrides(){localStorage.setItem(ADAPT_KEY,JSON.stringify(adaptiveOverrides))}
+function globalIndex(w,d){return w*7+d}
+function wdFromIndex(i){return {w:Math.floor(i/7),d:i%7}}
+function nextScheduledRun(w,d){for(let i=globalIndex(w,d)+1;i<schedule.length*7;i++){const x=wdFromIndex(i);if(schedule[x.w]&&schedule[x.w][x.d]&&schedule[x.w][x.d].km)return x}return null}
+function previousScheduledRun(w,d){for(let i=globalIndex(w,d)-1;i>=0;i--){const x=wdFromIndex(i);if(schedule[x.w][x.d].km)return x}return null}
+function effectiveSession(w,d){const base=schedule[w][d],ov=adaptiveOverrides[keyFor(w,d)];return ov?{...base,...ov,adaptive:true}:base}
+function reasonLabel(r){return {time:'Lack of time',weather:'Bad weather',other:'Other reason',fatigue:'Fatigue / poor recovery',pain:'Pain / injury concern'}[r]||r}
+function previousEvidence(w,d){const p=previousScheduledRun(w,d);if(!p)return null;const k=keyFor(p.w,p.d);return {p,key:k,base:schedule[p.w][p.d],log:logs[k]||null,skip:skips[k]||null,done:!!completed[k]}}
+function adaptiveRecommendation(w,d){
+ const current=schedule[w][d];
+ if(!current.km)return {level:'green',title:'Rest day',text:'No running adjustment needed today.',override:null};
+ const prev=previousEvidence(w,d);
+ if(!prev)return {level:'green',title:'Proceed as planned',text:'There is no previous scheduled run to assess yet.',override:null};
+ if(prev.skip){
+   if(['time','weather','other'].includes(prev.skip.reason))return {level:'green',title:'Continue with the plan',text:`You skipped the previous run because of ${reasonLabel(prev.skip.reason).toLowerCase()}. Do not add those missed kilometres to today. Continue with today’s planned session.`,override:null};
+   if(prev.skip.reason==='fatigue')return {level:'orange',title:'Recovery-first session',text:'The previous run was skipped for fatigue/poor recovery. Replace today’s quality or long session with 10 km easy if you now feel recovered. If you still feel unusually fatigued, rest instead.',override:{type:'Easy Run',km:10,detail:'Adaptive: 10 km easy at conversational effort because the previous session was skipped for fatigue. Do not add missed kilometres.',effort:'Easy · RPE 2–4/10'}};
+   if(prev.skip.reason==='pain')return {level:'red',title:'Do not progress today',text:'The previous run was skipped for pain/injury concern. Rest or use only pain-free low-impact activity. Resume running only when symptoms have settled; persistent or gait-altering pain should be assessed.',override:{type:'Rest',km:null,detail:'Adaptive: no running today because the previous scheduled run was skipped for pain/injury concern.',effort:'Recovery / reassessment'}};
+ }
+ const l=prev.log;
+ if(!l){if(prev.done)return {level:'green',title:'Proceed as planned',text:'The previous run was marked completed, but no workout metrics were logged. Keep today as planned unless you feel unusually sore or fatigued.',override:null};return {level:'yellow',title:'No previous data',text:'The previous scheduled run has neither a completion/skip status nor workout metrics. Keep today as planned, but use how you feel as the final check.',override:null}}
+ const planned=Number(prev.base.km)||0,actual=Number(l.actualDistance)||0,ratio=planned&&actual?actual/planned:null,rpeN=Number(l.rpe)||0,painN=Number(l.pain)||0,feel=l.feeling||'';
+ if(painN>=4)return {level:'red',title:'Recovery / reassessment recommended',text:'Pain was 4/10 or higher in the previous run. Do not use a hard adaptive workout today. Rest or use pain-free low-impact activity; if pain persists, increases, or changes your gait, seek assessment.',override:{type:'Rest',km:null,detail:'Adaptive: no running today because the previous workout recorded pain ≥4/10.',effort:'Recovery / reassessment'}};
+ if(painN>=1||rpeN>=9||feel==='Very hard')return {level:'orange',title:'Reduce load',text:'The previous run showed pain, very high effort, or was rated very hard. Replace today’s quality/long work with an easy 10 km only if symptoms are settled; otherwise rest.',override:{type:'Easy Run',km:10,detail:'Adaptive: 10 km easy at conversational effort. No tempo, intervals, progression finish, or catch-up kilometres.',effort:'Easy · RPE 2–4/10'}};
+ if((ratio!==null&&ratio<0.70)||rpeN>=8||feel==='Hard'){const target=Math.max(10,Math.round((current.km||10)*0.8));return {level:'yellow',title:'Moderate adjustment',text:`The previous session was substantially shortened or felt hard. Keep today easy and cap it around ${target} km rather than forcing the original intensity.`,override:{type:'Easy Run',km:target,detail:`Adaptive: ${target} km easy at conversational effort. Skip hard segments today.`,effort:'Easy · RPE 3–4/10'}}}
+ if(ratio!==null&&ratio<0.90)return {level:'yellow',title:'Proceed, but do not compensate',text:'You completed less than 90% of the previous planned distance without a major recovery warning. Continue with today’s plan, but do not add the missed distance.',override:null};
+ return {level:'green',title:'Proceed as planned',text:'Previous-session distance, effort, pain and perceived feel do not trigger a reduction. Keep today’s planned workout.',override:null};
+}
+function parsePaceToSeconds(v){
+  if(!v)return null;
+  const m=String(v).trim().match(/^(\d+)(?::([0-5]?\d))?$/);
+  if(!m)return null;
+  return Number(m[1])*60+Number(m[2]||0);
+}
+function secondsToPace(sec){
+  if(!sec||!isFinite(sec))return '—';
+  const m=Math.floor(sec/60),s=Math.round(sec%60);
+  return m+':'+String(s).padStart(2,'0');
+}
+function populateLogForm(){
+  const l=logs[keyFor(wi,di)]||{};
+  actualDistance.value=l.actualDistance??'';
+  duration.value=l.duration??'';
+  pace.value=l.pace??'';
+  speed.value=l.speed??'';
+  avgHR.value=l.avgHR??'';
+  rpe.value=l.rpe??'';
+  pain.value=l.pain??'';
+  feeling.value=l.feeling??'';
+  notes.value=l.notes??'';
+  renderLogSummary();
+}
+function renderLogSummary(){
+  const l=logs[keyFor(wi,di)];
+  const el=document.getElementById('logSummary');
+  if(!l){el.textContent='No workout details saved for this day yet.';return}
+  const p=[];
+  if(l.actualDistance)p.push('Distance: '+l.actualDistance+' km');
+  if(l.duration)p.push('Time: '+l.duration+' min');
+  if(l.pace)p.push('Pace: '+l.pace+'/km');
+  if(l.speed)p.push('Speed: '+l.speed+' km/h');
+  if(l.avgHR)p.push('Avg HR: '+l.avgHR+' bpm');
+  if(l.rpe)p.push('RPE: '+l.rpe+'/10');
+  if(l.pain!=='')p.push('Pain: '+l.pain+'/10');
+  if(l.feeling)p.push('Feel: '+l.feeling);
+  el.textContent=p.length?p.join(' · '):'Workout details saved.';
+}
 function todayDateOnly(){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
 
 const week=document.getElementById('week');
@@ -169,13 +313,13 @@ function renderTraining(){
  week.value=wi;
  const days=document.getElementById('days');days.innerHTML='';
  for(let d=0;d<7;d++){
-   const s=schedule[wi][d],b=document.createElement('button');
-   b.type='button';b.className='daybtn '+cls(s.type)+(isDone(wi,d)?' done':'');
+   const s=effectiveSession(wi,d),b=document.createElement('button');
+   b.type='button';b.className='daybtn '+cls(s.type)+(isDone(wi,d)?' done':'')+(skips[keyFor(wi,d)]?' skipped':'');
    b.setAttribute('aria-pressed',d===di?'true':'false');
    b.innerHTML=`<strong>${names[d]}</strong><span>${s.km?s.km+' km':'—'}</span>`;
    b.addEventListener('click',()=>{di=d;renderTraining()});days.appendChild(b);
  }
- const s=schedule[wi][di],dt=dateFor(wi,di);
+ const s=effectiveSession(wi,di),dt=dateFor(wi,di);
  document.getElementById('date').textContent=dt.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · '+phases[wi];
  document.getElementById('type').textContent=s.type;
  document.getElementById('km').textContent=s.km?s.km+' km':'—';
@@ -190,6 +334,20 @@ function renderTraining(){
  if(!s.km){btn.textContent='Rest day — no goal to check off';btn.disabled=true;btn.className='donebtn'}
  else if(isDone(wi,di)){btn.textContent='✓ Completed — tap to undo';btn.disabled=false;btn.className='donebtn completed'}
  else{btn.textContent='Mark today’s run as done ✓';btn.disabled=false;btn.className='donebtn'}
+ const sk=skips[keyFor(wi,di)];
+ const chip=document.getElementById('statusChip');
+ if(sk){chip.classList.remove('hidden');chip.textContent='Skipped: '+reasonLabel(sk.reason)}else if(isDone(wi,di)){chip.classList.remove('hidden');chip.textContent='✓ Completed'}else{chip.classList.add('hidden');chip.textContent=''}
+ const skipBtn=document.getElementById('skipBtn');skipBtn.disabled=!schedule[wi][di].km;skipBtn.textContent=sk?'Change / remove skip reason':'Skip this run';
+ const removeSkipBtn=document.getElementById('removeSkipBtn');removeSkipBtn.classList.toggle('hidden',!sk);
+ const rec=adaptiveRecommendation(wi,di),box=document.getElementById('adaptiveBox');box.className='adaptive '+rec.level;document.getElementById('adaptiveTitle').textContent=rec.title;document.getElementById('adaptiveText').textContent=rec.text;
+ const acts=document.getElementById('adaptiveActions');acts.innerHTML='';
+ if(rec.override){const apply=document.createElement('button');apply.type='button';apply.className='apply-rec';apply.textContent='Apply adaptive version';apply.addEventListener('click',()=>{adaptiveOverrides[keyFor(wi,di)]=rec.override;saveOverrides();renderTraining()});acts.appendChild(apply)}
+ if(adaptiveOverrides[keyFor(wi,di)]){const clear=document.createElement('button');clear.type='button';clear.className='clear-rec';clear.textContent='Use original plan instead';clear.addEventListener('click',()=>{delete adaptiveOverrides[keyFor(wi,di)];saveOverrides();renderTraining()});acts.appendChild(clear)}
+ const lt=document.getElementById('logToggle');
+ lt.disabled=!s.km;
+ lt.textContent=s.km?'＋ Add / edit workout details':'Rest day — no workout details';
+ if(!s.km)document.getElementById('logPanel').classList.add('hidden');
+ populateLogForm();
 }
 
 function allScheduledRunDays(){
@@ -212,6 +370,14 @@ function renderStats(){
  let streak=0;
  for(let i=elapsed.length-1;i>=0;i--){if(completed[elapsed[i].key])streak++;else break}
  document.getElementById('streak').textContent=streak;
+ const entries=Object.values(logs);
+ const kmTotal=entries.reduce((a,l)=>a+(Number(l.actualDistance)||0),0);
+ document.getElementById('actualKm').textContent=kmTotal?kmTotal.toFixed(1):'0';
+ const paceSecs=entries.map(l=>parsePaceToSeconds(l.pace)).filter(Boolean);
+ document.getElementById('avgPaceStat').textContent=paceSecs.length?secondsToPace(paceSecs.reduce((a,b)=>a+b,0)/paceSecs.length)+'/km':'—';
+ const skipEntries=Object.values(skips);document.getElementById('skippedCount').textContent=skipEntries.length;
+ const counts={time:0,weather:0,other:0,fatigue:0,pain:0};skipEntries.forEach(x=>{if(counts[x.reason]!==undefined)counts[x.reason]++});
+ const rs=document.getElementById('reasonStats');rs.innerHTML='';[['time','Time'],['weather','Weather'],['other','Other'],['fatigue','Fatigue'],['pain','Pain']].forEach(([k,l])=>{const el=document.createElement('div');el.className='reason-stat';el.innerHTML='<b>'+counts[k]+'</b><span>'+l+'</span>';rs.appendChild(el)});
 
  const wl=document.getElementById('weekList');wl.innerHTML='';
  for(let w=0;w<schedule.length;w++){
@@ -233,7 +399,35 @@ function renderStats(){
 
 document.getElementById('doneBtn').addEventListener('click',()=>{
  const s=schedule[wi][di];if(!s.km)return;
- const k=keyFor(wi,di);if(completed[k])delete completed[k];else completed[k]=true;save();renderTraining();
+ const k=keyFor(wi,di);if(completed[k])delete completed[k];else{completed[k]=true;delete skips[k];saveSkips()}save();
+document.getElementById('skipBtn').addEventListener('click',()=>{if(!schedule[wi][di].km)return;document.getElementById('skipPanel').classList.toggle('hidden')});
+document.getElementById('removeSkipBtn').addEventListener('click',()=>{const k=keyFor(wi,di);delete skips[k];saveSkips();document.getElementById('skipPanel').classList.add('hidden');renderTraining()});
+document.querySelectorAll('.reason-btn').forEach(btn=>btn.addEventListener('click',()=>{const k=keyFor(wi,di),reason=btn.dataset.reason;skips[k]={reason,at:new Date().toISOString()};delete completed[k];saveSkips();save();document.getElementById('skipPanel').classList.add('hidden');renderTraining()}));
+document.getElementById('logToggle').addEventListener('click',()=>{
+  const p=document.getElementById('logPanel');
+  p.classList.toggle('hidden');
+  if(!p.classList.contains('hidden'))populateLogForm();
+});
+document.getElementById('saveLogBtn').addEventListener('click',()=>{
+  const k=keyFor(wi,di);
+  if(!schedule[wi][di].km)return;
+  let actual=Number(actualDistance.value)||'';
+  let mins=Number(duration.value)||'';
+  let p=pace.value.trim();
+  let sp=Number(speed.value)||'';
+  if(!p&&actual&&mins)p=secondsToPace((mins*60)/actual);
+  if(!sp&&p){const sec=parsePaceToSeconds(p);if(sec)sp=(3600/sec).toFixed(1)}
+  logs[k]={actualDistance:actual,duration:mins,pace:p,speed:sp,avgHR:Number(avgHR.value)||'',rpe:rpe.value,pain:pain.value,feeling:feeling.value,notes:notes.value.trim()};
+  saveLogs();populateLogForm();
+  savedMsg.textContent='Saved ✓';
+  setTimeout(()=>savedMsg.textContent='',1400);
+});
+document.getElementById('clearLogBtn').addEventListener('click',()=>{
+  const k=keyFor(wi,di);
+  if(logs[k]&&confirm('Clear the saved workout details for this day?')){delete logs[k];saveLogs();populateLogForm()}
+});
+
+renderTraining();
 });
 week.addEventListener('change',e=>{wi=Number(e.target.value);di=0;renderTraining()});
 document.getElementById('prev').addEventListener('click',()=>{if(di>0)di--;else if(wi>0){wi--;di=6}renderTraining()});
@@ -250,7 +444,7 @@ function showStats(){
 document.getElementById('trainingTabBtn').addEventListener('click',showTraining);
 document.getElementById('statsTabBtn').addEventListener('click',showStats);
 document.getElementById('resetBtn').addEventListener('click',()=>{
- if(confirm('Reset all completed-day check-offs?')){completed={};save();renderStats();renderTraining()}
+ if(confirm('Reset all completion check-offs, skips, workout logs and adaptive changes?')){completed={};logs={};skips={};adaptiveOverrides={};save();saveLogs();saveSkips();saveOverrides();renderStats();renderTraining()}
 });
 
 renderTraining();
