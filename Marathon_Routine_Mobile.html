@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Marathon Routine</title>
+<style>
+:root{--text:#111827;--muted:#4b5563;--border:#cbd5e1;--easy:#dceaf5;--recovery:#e2efd9;--intervals:#f2d4d4;--tempo:#f7e3d2;--fartlek:#e2daef;--strides:#d3e7f4;--long:#f7edc8;--progression:#f1d97d;--rest:#f3f4f6}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#fff;color:var(--text)}main{max-width:760px;margin:0 auto;padding:16px}.header{display:flex;gap:12px;align-items:end;justify-content:space-between;margin-bottom:16px}.subtitle{font-size:13px;color:var(--muted)}h1{font-size:24px;line-height:1.1;margin:3px 0 0}select,button{font:inherit}select{background:#fff;color:var(--text);border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:16px;min-height:44px}.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}.daybtn{min-width:64px;min-height:58px;border:1px solid var(--border);border-radius:14px;padding:8px 9px;text-align:center;color:var(--text);font-weight:700;background:#fff}.daybtn small{display:block;font-weight:600;color:#374151;margin-top:2px}.daybtn[aria-pressed="true"]{outline:3px solid #111827;outline-offset:1px}.card{border:1px solid var(--border);border-radius:18px;padding:18px;color:var(--text)}.top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.date{font-size:13px;color:var(--muted)}.type{font-size:27px;line-height:1.1;font-weight:800;margin-top:4px}.km{border:1px solid #94a3b8;background:#fff;border-radius:999px;padding:6px 11px;font-weight:800;white-space:nowrap}.detail{font-size:17px;line-height:1.55;margin-top:20px}.effort{margin-top:16px;border:1px solid #9ca3af;background:#fff;border-radius:12px;padding:11px 12px;font-size:14px;color:#111827}.nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.nav button{min-height:46px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--text);font-weight:700}.nav button:last-child{background:#e5e7eb}.note{font-size:12px;line-height:1.4;color:var(--muted);margin-top:14px}.easy{background:var(--easy)}.recovery{background:var(--recovery)}.intervals{background:var(--intervals)}.tempo{background:var(--tempo)}.fartlek{background:var(--fartlek)}.strides{background:var(--strides)}.long{background:var(--long)}.progression{background:var(--progression)}.rest{background:var(--rest)}@media(max-width:520px){main{padding:12px}.header{align-items:stretch;flex-direction:column}select{width:100%}.type{font-size:24px}.detail{font-size:16px}}
+</style>
+</head>
+<body>
+<main>
+<div class="header"><div><div class="subtitle">Sep 2026 → Feb 2027</div><h1>Daily Running Card</h1></div><select id="week" aria-label="Choose training week"></select></div>
+<div id="days" class="days"></div>
+<section id="card" class="card" aria-live="polite"><div class="top"><div><div id="date" class="date"></div><div id="type" class="type"></div></div><div id="km" class="km"></div></div><div id="detail" class="detail"></div><div id="effort" class="effort"></div></section>
+<div class="nav"><button id="prev" type="button">← Previous day</button><button id="next" type="button">Next day →</button></div>
+<div class="note"><strong>Conversational</strong> = you can speak in full sentences without gasping. Rest days stay rest days; every scheduled run is at least 10 km.</div>
+</main>
+<script>
+const phases=['Break','Break','Teaching','Teaching','Teaching','Recovery','Research','Research','Research','Recovery','Endurance','Endurance','Endurance','Recovery','Aerobic','Aerobic','Aerobic','Recovery','Pre-marathon','Pre-marathon','Pre-marathon','Transition'];
+const quality=[
+['Intervals','10 km','2 km easy warm-up → 6 × 600 m at controlled 5K–10K effort, 300 m easy jog after each → easy cool-down to 10 km.'],
+['Tempo','11 km','2 km warm-up → 3 × 2 km tempo/threshold, 500 m easy jog between → 2 km cool-down.'],
+['Intervals','10 km','2 km warm-up → 5 × 800 m at controlled 10K effort, 400 m easy jog → cool-down to 10 km.'],
+['Tempo','10 km','2 km warm-up → 20 min controlled tempo → easy running → 4 × 200 m relaxed-fast, 200 m jog → cool-down to 10 km.'],
+['Intervals','11 km','2 km warm-up → 6 × 800 m at controlled 10K effort, 400 m jog → 2 km cool-down.'],
+['Fartlek','10 km','2 km easy → 8 × (1 min controlled hard + 2 min very easy) → easy running to 10 km.'],
+['Intervals','11 km','2 km warm-up → 5 × 1 km at controlled 10K effort, 400 m jog → easy cool-down.'],
+['Tempo','11 km','2 km warm-up → 2 × 3 km tempo, 1 km easy between → easy cool-down.'],
+['Intervals','12 km','2 km warm-up → 6 × 1 km at controlled 10K effort, 400 m jog → easy cool-down.'],
+['Fartlek','10 km','2 km easy → 10 × (1 min hard + 2 min easy) → easy running to 10 km.'],
+['Intervals','11 km','2 km warm-up → 4 × 1.2 km at controlled 10K effort, 400 m jog → easy cool-down.'],
+['Tempo','11 km','2 km warm-up → 25 min tempo → 5 min easy → 10 min tempo → easy cool-down.'],
+['Intervals','12 km','2 km warm-up → 5 × 1.2 km at controlled 10K effort, 400 m jog → easy cool-down.'],
+['Intervals','10 km','2 km warm-up → 8 × 400 m at controlled 5K effort, 400 m easy → cool-down.'],
+['Tempo','11 km','2 km warm-up → 3 × 2 km threshold, 500 m jog → easy cool-down.'],
+['Intervals','12 km','2 km warm-up → 6 × 1 km at controlled 10K effort, 400 m jog → easy cool-down.'],
+['Tempo','11 km','2 km warm-up → 2 × 3 km tempo, 1 km easy → cool-down.'],
+['Fartlek','10 km','2 km easy → 10 × (1 min hard + 2 min easy) → easy running to 10 km.'],
+['Intervals','13 km','2 km warm-up → 5 × 1.4 km at controlled 10K effort, 400 m jog → 2 km cool-down.'],
+['Tempo','12 km','2 km warm-up → 35 min continuous controlled tempo → easy running to 12 km.'],
+['Intervals','13 km','2 km warm-up → 6 × 1.2 km at controlled 10K effort, 400 m jog → easy cool-down.'],
+['Intervals','10 km','2 km warm-up → 6 × 600 m controlled fast, 300 m jog → easy running to 10 km.']];
+const longs=[14,15,16,17,18,14,18,19,20,16,20,21,22,17,21,22,23,18,22,23,24,18];
+const start=new Date(Date.UTC(2026,8,27)), names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; let wi=0,di=0;
+function session(w,d){if(d===1)return quality[w];if(d===5){const prog=w===10||w===16,n=longs[w];return[prog?'Progression Long Run':'Long Run',n+' km',prog?(w===10?'First 17 km easy → final 3 km steady.':'First 19 km easy → final 4 km steady.'):`${n} km easy at conversational effort.`]}if(w>=2&&w<=5&&(d===2||d===4))return['Rest','—','Busy teaching day. No running.'];if(d===6)return['Rest','—','No running. Recovery day.'];if(d===0)return w%3===1?['Easy Run','10 km','10 km easy at conversational effort.']:['Easy + Strides','10 km','10 km easy. Finish with 6 × 20 sec relaxed strides; 60–90 sec easy jog/walk between.'];if(d===2)return['Recovery Run','10 km','10 km very easy and relaxed.'];if(d===3)return['Easy Run','10 km','10 km easy at conversational effort.'];if(d===4)return['Recovery Run','10 km','10 km very easy.'];return['Rest','—','No running.']}
+function cls(t){if(t.includes('Progression'))return'progression';if(t.includes('Long'))return'long';if(t.includes('Interval'))return'intervals';if(t.includes('Tempo'))return'tempo';if(t.includes('Fartlek'))return'fartlek';if(t.includes('Strides'))return'strides';if(t.includes('Recovery'))return'recovery';if(t.includes('Easy'))return'easy';return'rest'}
+const week=document.getElementById('week'),days=document.getElementById('days');for(let i=0;i<22;i++){let d=new Date(start);d.setUTCDate(d.getUTCDate()+i*7);let o=document.createElement('option');o.value=i;o.textContent=`Week ${i+1} · ${d.toLocaleDateString('en-AU',{day:'numeric',month:'short',timeZone:'UTC'})}`;week.appendChild(o)}
+(function(){const n=new Date(),today=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()),s=Date.UTC(2026,8,27),diff=Math.floor((today-s)/86400000);if(diff>=0&&diff<154){wi=Math.floor(diff/7);const jd=n.getDay();di=jd===0?6:jd-1}else{const sw=Number(localStorage.getItem('marathon-week')),sd=Number(localStorage.getItem('marathon-day'));if(Number.isInteger(sw)&&sw>=0&&sw<22)wi=sw;if(Number.isInteger(sd)&&sd>=0&&sd<7)di=sd}})();
+function save(){try{localStorage.setItem('marathon-week',wi);localStorage.setItem('marathon-day',di)}catch(e){}}
+function render(){week.value=wi;days.innerHTML='';for(let d=0;d<7;d++){const s=session(wi,d),b=document.createElement('button');b.type='button';b.className='daybtn '+cls(s[0]);b.setAttribute('aria-pressed',d===di?'true':'false');b.innerHTML=`<strong>${names[d]}</strong><small>${s[1]}</small>`;b.addEventListener('click',()=>{di=d;save();render()});days.appendChild(b)}const s=session(wi,di);let dt=new Date(start);dt.setUTCDate(dt.getUTCDate()+wi*7+di+1);document.getElementById('date').textContent=`${dt.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'})} · ${phases[wi]}`;document.getElementById('type').textContent=s[0];document.getElementById('km').textContent=s[1];document.getElementById('detail').textContent=s[2];document.getElementById('card').className='card '+cls(s[0]);const e=s[0].includes('Recovery')?'Very easy · RPE 2–3/10':(s[0].includes('Easy')||s[0].includes('Long'))?'Conversational · RPE 3–4/10':s[0].includes('Tempo')?'Controlled-hard · RPE 6–7/10':(s[0].includes('Interval')||s[0].includes('Fartlek'))?'Fast but controlled · RPE 7–8/10':'Recovery day';document.getElementById('effort').innerHTML='<strong>Effort:</strong> '+e}
+week.addEventListener('change',e=>{wi=Number(e.target.value);di=0;save();render()});document.getElementById('prev').addEventListener('click',()=>{if(di>0)di--;else if(wi>0){wi--;di=6}save();render()});document.getElementById('next').addEventListener('click',()=>{if(di<6)di++;else if(wi<21){wi++;di=0}save();render()});render();
+</script>
+</body>
+</html>
